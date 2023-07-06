@@ -1,0 +1,127 @@
+// Simulating asynchronous operations with setTimeout
+
+function createPost(post) {
+
+ return new Promise((resolve) => {
+
+  setTimeout(() => {
+
+   resolve(post);
+
+  }, 1000);
+
+ });
+
+}
+
+
+
+function updateLastUserActivityTime() {
+
+ return new Promise((resolve) => {
+
+  setTimeout(() => {
+
+   resolve();
+
+  }, 1000);
+
+ });
+
+}
+
+
+
+function deletePost(post) {
+
+ return new Promise((resolve) => {
+
+  setTimeout(() => {
+
+   resolve();
+
+  }, 1000);
+
+ });
+
+}
+
+
+
+// Function to handle the deliverable
+
+async function handleDeliverable() {
+
+ const posts = [];
+
+
+
+ // Create posts
+
+ const createPostPromises = [
+
+  createPost('Post 1'),
+
+  createPost('Post 2'),
+
+  createPost('Post 3'),
+
+ ];
+
+
+
+ // Update last user activity time
+
+ const updateLastUserActivityTimePromise = updateLastUserActivityTime();
+
+
+
+ // Wait for both promises to resolve using Promise.all
+
+ await Promise.all([...createPostPromises, updateLastUserActivityTimePromise]);
+
+
+
+ // Log all the posts created
+
+ for (const promise of createPostPromises) {
+
+  const post = await promise;
+
+  posts.push(post);
+
+ }
+
+ console.log('All posts created:', posts);
+
+
+
+ // Log the last activity time of the user
+
+ console.log('Last activity time updated');
+
+
+
+ // Delete the last post
+
+ const deletePostPromise = deletePost(posts[posts.length - 1]);
+
+ await deletePostPromise;
+
+ console.log('Last post deleted');
+
+
+
+ // Log the new set of posts
+
+ const newPosts = posts.slice(0, posts.length - 1);
+
+ console.log('New set of posts:', newPosts);
+
+}
+
+
+
+// Call the function to test the deliverable
+
+handleDeliverable();
