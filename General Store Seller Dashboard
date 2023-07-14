@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>Inventory</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="#" id="form" onsubmit="addEntry(event)">
+                    Item name <input type="text" id="itemname">
+                    Description <input type="text" id="description">
+                    Price <input type="text" id="price">
+                    Quantity <input type="text" id="quantity">
+                    <button id="btn" type="submit">Add item</button>
+
+                </form>
+                <ul id="ulul" style="list-style-type: none; text-align: center;"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+function addEntry(event) {
+    event.preventDefault();
+
+    const ob = {
+        itemname: document.getElementById('itemname').value,
+        description: document.getElementById('description').value,
+        price: document.getElementById('price').value,
+        quantity: document.getElementById('quantity').value
+    };
+
+    axios.post('https://crudcrud.com/api/44973b8cc9dd4e898bc0f3758224b6bd/a', ob)
+        .then(res => {
+            console.log(res);
+            appendEntryToList(res.data);
+        })
+        .catch(e => console.log(e));
+}
+
+function reduceQuantity(id, ob, li) {
+    axios.get(`https://crudcrud.com/api/44973b8cc9dd4e898bc0f3758224b6bd/a/${id}`)
+        .then(res => {
+            let updatedQuantity = parseInt(res.data.quantity) - 1;
+            ob.quantity=updatedQuantity;
+            delete ob._id
+            console.log(li);
+            if (updatedQuantity >= 0) {
+                axios.put(`https://crudcrud.com/api/44973b8cc9dd4e898bc0f3758224b6bd/a/${id}`, ob)
+                    .then(res => {
+                        console.log(res);
+                        li.querySelector('.quantity').innerText = ob.quantity;
+                    })
+                    .catch(e => console.log(e));
+            } else {
+                console.log('Insufficient quantity!');
+            }
+        })
+        .catch(e => console.log(e));
+
+}
+
+function appendEntryToList(entry) {
+    let ul = document.getElementById('ulul');
+    let li = document.createElement('li');
+    let buy1 = document.createElement('button');
+    let buy2 = document.createElement('button');
+    let buy3 = document.createElement('button');
+
+    buy1.classList.add('buy1');
+    buy2.classList.add('buy2');
+    buy3.classList.add('buy3');
+    buy1.innerText = 'Buy 1';
+    buy2.innerText = 'Buy 2';
+    buy3.innerText = 'Buy 3';
+
+    li.innerHTML = `${entry.itemname} - ${entry.description} - ${entry.price} - <span class="quantity">${entry.quantity}</span>`;
+    li.appendChild(buy1);
+    li.appendChild(buy2);
+    li.appendChild(buy3);
+    ul.appendChild(li);
+
+    buy1.addEventListener('click', () => reduceQuantity(entry._id, entry, li));
+}
+
+    </script>
+</body>
+</html>
+
